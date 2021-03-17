@@ -1,0 +1,37 @@
+//
+HOW TO INSTALL TRAIL ANALYTICS CLOCKING WEB APPLICATION.
+
+One should have installed the following development tools on their machine
+
+- composer from composer.org to enable downloading of framework and needed source binary
+- A server like xampp, wamp to run the application during development, which comes with features like 
+apache web server, database Msql under phpMyAdmin etc
+- install php source binary for development
+- install php laravel framework using composer 
+- should have development environment to spin laravel server or terminal
+- browser to access the application.
+
+//
+HOW TO RUN THE APPLICATION
+
+If all above is fulfilled:-
+- Copy application folder in to server directory say xampp/htdoc
+- start server to open up database(Mysql) and web server apache
+- create database clocking with Mysql
+- spin laravel server with artisan command [php artisan serve]
+- run migrate plus the database seeding [php artisan migrate:refresh --seed]
+- access the application from browser through http link provided after spinning laravel framework server
+- Log in with seeding value [
+     email= info@trialanalytics.com
+     password = admin
+ ]
+- follow navigation links on the application and buttons for great experience
+
+//
+FURTHURE IMPROVEMENTS
+
+- social login
+- export files to desired destination
+- Logs within specfied session
+- application upgrade to least version due to internet I wasnot well supported to implement this but it is in my help to do the best for any development
+- not single user have multiple entry for time in due to back and forward navigation on application
