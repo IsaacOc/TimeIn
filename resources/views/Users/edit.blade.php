@@ -13,32 +13,23 @@
 <!--update method take put/patch method but html doesn't support in form add input element-->
                         <input type="hidden" name="_method" value="put">
 
-                        <div class="form-group{{ $errors->has('Name') ? ' has-error' : '' }}">
+                        <div class="form-group">
 
                             <div class="col-md-8">
                             <label for="Name" class="control-label">Name</label>
                                 <input id="Name" type="text" class="form-control" name="Name" value="{{ $user->name }}" required>
 
-                                @if ($errors->has('Name'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('Name') }}</strong>
-                                    </span>
-                                @endif
+                              
                             </div>
 
                         </div>
 
-                        <div class="form-group{{ $errors->has('Email') ? ' has-error' : '' }}">
+                        <div class="form-group">
 
                             <div class="col-md-8">
                             <label for="Email" class="control-label">Email</label>
                                 <input id="Email" type="Email" class="form-control" name="Email" value="{{ $user->email }}" required>
 
-                                @if ($errors->has('Email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('Email') }}</strong>
-                                    </span>
-                                @endif
                             </div>
                         </div>
 
