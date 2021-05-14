@@ -30,7 +30,7 @@
                 <td style="padding-left:3em">{{ $users->created_at }}</td>       
                 <td style="padding-left:3em">
             
-            <a class="btn btn-brand btn-danger"  href="" 
+            <a class="btn btn-brand btn-danger"   
                         onclick="
                       var result = confirm('Are you sure you wish to delete this User ?');
                     if( result){  
@@ -49,9 +49,9 @@
                 </tbody>
                 </table>
 
-                              <form id="delete.form" action="{{ route('user.destroy',[$users->user_id]) }}"
+                              <form id="delete.form" action="{{ route('user.destroy',[$users->id]) }}"
                                      method="POST" style="display:none;">
-                                  <input type="hidden" name="_method" value="post"><!--in laravel need to tell it form is going to delete other than post n get -->
+                                  <input type="hidden" name="_method" value="delete"><!--in laravel need to tell it form is going to delete other than post n get -->
                                 {{ csrf_field() }}
                               <form>
 

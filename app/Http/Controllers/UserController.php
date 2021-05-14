@@ -141,7 +141,7 @@ class UserController extends Controller
         event(new Links());
         //finds user with supplied id to delete
         $finduser = User::find($user->id);
-        $findtr_user = tr_User::find($user->id);
+        //$findtr_user = tr_User::find($user->user_id);
 
         if($finduser->delete()){
            
