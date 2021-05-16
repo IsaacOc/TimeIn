@@ -25,7 +25,11 @@ class UserController extends Controller
         event(new Links());
         $Authuser = Auth::User();
         //retrieves all users table
-        $userDB = User::all();
+        $userDB = User::select("*")
+        ->where([
+            ["admin", Auth::user()->email]
+        ])
+        ->get();
        //dumps values to view index page for display
         return view('Users.index',['userDB' => $userDB,'notificatiion' => $Authuser->notification]);
     }
@@ -59,7 +63,8 @@ class UserController extends Controller
                 'name' => $request->input('Name'),
                 'email' => $request->input('Email'),
                 'password' => bcrypt($request->input('Password')), 
-                'role' => $request->input('roles'),             
+                'role' => $request->input('roles'),
+                'admin' => $request->input('Admin')             
             ]);
 
             
