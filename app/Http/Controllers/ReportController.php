@@ -24,11 +24,7 @@ class ReportController extends Controller
         event(new Links());
         //returns all user from User table
         $user = User::all();
-        //loop through the collection
-        foreach($user as $users){
-            $role = $users->role;
-            $id = $users->id;
-        }
+        
         //checks if authenticated user role is a 'admin'
         if(Auth::check() && Auth::user()->role == 'admin'){
         //returns all log from Logs table 
