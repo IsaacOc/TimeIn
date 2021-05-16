@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'info@trailanalytics.com',
             'password' => bcrypt('admin'),
             'role' => 'admin',
+            'admin' => 'info@trailanalytics.com',
             'created_at' => date('d,m,y,h,i,s')
         ]); 
 

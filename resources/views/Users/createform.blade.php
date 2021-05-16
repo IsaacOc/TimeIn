@@ -10,6 +10,7 @@
                 <div class="panel-body " style="box-shadow:0px 0px 3px 3px grey">
                     <form class="form-horizontal" method="POST" action="{{ route('user.store') }}">
                         {{ csrf_field() }}
+                        <input id="Admin" type="hidden"  name="Admin" value=" {{ Auth::user()->email }}" >
 
 
                         <div class="form-group">
