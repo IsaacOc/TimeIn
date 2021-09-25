@@ -17,8 +17,13 @@
                         @foreach($user as $users)
                         <tr>
                         <!--display users -->
+                       
+                        @if(Auth::user()->role == "admin" )
+                        <td><a href="report/{{$users->id}}/edit ">{{ $users->name }}<br/>{{ $users->email }}</a></td>
+                        @endif   
+                        @if(Auth::user()->role == "user" )
                         <td>{{ $users->name }}<br/>{{ $users->email }}</td>
-                                        
+                        @endif
                         </tr>
                         @endforeach
                         </tbody>

@@ -26,8 +26,8 @@
                             <input id="role" type="hidden" class="form-control"  name="role" value=" {{ Auth::user()->role }}" required >
                             <input id="email" type="hidden" class="form-control"  name="email" value=" {{ Auth::user()->email }}" required >
 
-                           <h4>{{ date("D")}}, {{date("d/M/y")}}</h4>
-                            <input id="date" type="hidden" class="form-control"  name="dat" value=" {{date('D')}}, {{date('d/M/y')}}" required >
+                           <h4>{{ date("D,d/M/y")}}</h4>
+                            <input id="date" type="hidden" class="form-control"  name="dat" value=" {{date('D,d/M/y')}}" required >
 
                         </figure>
 
