@@ -28,8 +28,8 @@ class clockingIn extends Notification implements ShouldQueue
      * @return array
      */
     public function via($notifiable)
-    {
-        return ['mail','database'];
+    {//'mail',
+        return ['database'];
     }
 
     /**
@@ -44,9 +44,14 @@ class clockingIn extends Notification implements ShouldQueue
 
         return (new MailMessage)
                     ->greeting('How are you!')
-                    ->line('The time_in not registered yet.')
-                    ->action('Register Time_In',  $url)
+                    ->line('The time_in registered.')
                     ->line('Thank you for using our application!');
+
+        // return (new MailMessage)
+        //             ->greeting('How are you!')
+        //             ->line('The time_in not registered yet.')
+        //             ->action('Register Time_In',  $url)
+        //             ->line('Thank you for using our application!');
     }
 
     /**
