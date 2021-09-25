@@ -4,11 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Logs;
-use App\Events\Links;
+
+use App\Repositories\PostRepositoryInterface;
 
 class LogsController extends Controller
 {
+    private $repository;
+
+    public function __construct(PostRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -60,11 +67,20 @@ class LogsController extends Controller
     public function edit($id)
     {
         //fires link event capturing page url
-        event(new Links());
+        $this->repository->saveLinks();
 
-        $Logs = Logs::find($id);
+        //$Logs = Logs::find($id);
+        $Logs = $this->repository->getLogsById($id);
+
         //returns view edit Log page with payload data
+        if($Logs['Time_Out'] == null){
+
         return view('Logs.edit',['Logs' => $Logs]);
+        
+        }
+        else{
+            return view('partials.404');
+        }
     }
 
     /**
@@ -77,18 +93,21 @@ class LogsController extends Controller
     public function update(Request $request, $id)
     {
         //updates Log table with time_out value from view where matching id
-        $Logs = Logs::where('id',$id)->update([
-           
-            'time_out' => $request->input('tim'),
-        ]);
+        
+        $updatetimOut = array(
+            'id' =>   $id,           
+            'time_out' => $request->input('tim'),          
+        );
+
+        $Logs = $this->repository->updateTimOut($updatetimOut);
 
         if($Logs){
             //fires link event capturing page url
-            event(new Links());
+            $this->repository->saveLinks();
             //need to redirect to edit Log page with success session message and payload data
             return redirect()->route('Logs.edit',['Logs' => $id])->with('success' , 'Time Out Recorded LogOut');
         }
-        return back()->withInput()-with('error','Error creating try again');
+        return back()->withInput()->with('error','Error creating try again');
 
     }
 

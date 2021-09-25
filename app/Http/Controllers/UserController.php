@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\User;
-use App\tr_User;
-use App\Events\Links;
-use App\Events\TimeIn;
 use App\Http\Controllers\UserController;
 
+use App\Repositories\PostRepositoryInterface;
 
 class UserController extends Controller
 {
+    private $repository;
+
+    public function __construct(PostRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -22,14 +26,15 @@ class UserController extends Controller
     public function index()
     {
         //fires link event capturing page url
-        event(new Links());
+        $this->repository->saveLinks();
         $Authuser = Auth::User();
         //retrieves all users table
-        $userDB = User::select("*")
-        ->where([
-            ["admin", Auth::user()->email]
-        ])
-        ->get();
+       
+        $User = array(               
+            'email' => Auth::user()->email,        
+        );
+
+        $userDB = $this->repository->getAuthUserByEmail($User);
        //dumps values to view index page for display
         return view('Users.index',['userDB' => $userDB,'notificatiion' => $Authuser->notification]);
     }
@@ -55,19 +60,19 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //fires link event capturing page url
-        event(new Links());
+        $this->repository->saveLinks();
         //save user
         if(Auth::check() && $request->input('roles') != ""){
-            $Logs = User::create([
-               
-                'name' => $request->input('Name'),
-                'email' => $request->input('Email'),
-                'password' => bcrypt($request->input('Password')), 
-                'role' => $request->input('roles'),
-                'admin' => $request->input('Admin')             
-            ]);
 
-            
+            $User = array(               
+                    'name' => $request->input('Name'),
+                    'email' => $request->input('Email'),
+                    'password' => $request->input('Password'), 
+                    'role' => $request->input('roles'),
+                    'admin' => $request->input('Admin')             
+                );
+
+            $addUser = $this->repository->addUser($User);
             //need to redirect to user index page with success session message and payload data
             return redirect('/user')->with('success' , 'User Details added');
         }
@@ -92,12 +97,12 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($id)
     {
         //fires link event capturing page url
-        event(new Links());
+        $this->repository->saveLinks();
         //finds user with supplied id to edit
-        $user = User::find($user->id);
+        $user = $this->repository->getUserById($id);
         //display view edit form with user details
         return view('Users.edit',['user' => $user]);
       
@@ -114,17 +119,20 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         //update user
-        $User = User::where('id',$user->id)->update([
-           
+       
+        $UserUpdate = array(
+            'id' =>   $user->id,           
             'name' => $request->input('Name'),
             'email' => $request->input('Email'),
-            'password' => bcrypt($request->input('Password')), 
-            'role' => $request->input('role'), 
-        ]);
+            'password' => $request->input('Password'), 
+            'role' => $request->input('role'),           
+        );
+
+        $User = $this->repository->UpdateUser($UserUpdate);
 
         if($User){
             //fires link event capturing page url
-            event(new Links());
+            $this->repository->saveLinks();
             
             //need to redirect to user index page with success session message and payload data 
             return redirect('/user')->with('success' , 'User Details Updated');
@@ -143,9 +151,9 @@ class UserController extends Controller
     {
             
         //fires link event capturing page url
-        event(new Links());
+        $this->repository->saveLinks();
         //finds user with supplied id to delete
-        $finduser = User::find($user->id);
+        $finduser = $this->repository->getUserById($user->id);
         //$findtr_user = tr_User::find($user->user_id);
 
         if($finduser->delete()){

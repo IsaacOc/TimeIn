@@ -7,20 +7,22 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\URL;
 
-use App\Logs;
-use App\Events\Links;
-use App\Events\TimeIn;
+
+
+use App\Repositories\PostRepositoryInterface;
 
 class HomeController extends Controller
 {
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(PostRepositoryInterface $repository)
     {
         $this->middleware('auth');
+        $this->repository = $repository;
     }
 
     /**
@@ -31,9 +33,19 @@ class HomeController extends Controller
     public function index()
     {
         //fires link event capturing page url       
-        event(new Links());
+        $this->repository->saveLinks();
         //returns view home index for time_In recording data
-        return view('home');
+        $timeIn = $this->repository->timeRegister(Auth::user()->email,Date("D,d/M/y"));
+        
+        if(sizeof($timeIn) > 0){
+            if($timeIn[0]['Time_In'] !== null  ){
+                return view('partials.404');
+            }
+        }
+        else{
+            return view('home');
+        }
+    
     }
       /**
      * Show the form for creating a new resource.
@@ -56,19 +68,25 @@ class HomeController extends Controller
         //saves user time_in when time button clicked
         //checkes if authenticate and role attribute not empty string
         if(Auth::check() && $request->input('role') != ""){
-            $Logs = Logs::create([
-               
-                'role' => $request->input('role'),
-                'email' => $request->input('email'),
-                'time_in' => $request->input('tim'), 
-                'date_in' => $request->input('dat'),             
-            ]);
-        // successfully saves
+
+            $timeInLogArray = array(              
+                            'role' => $request->input('role'),
+                            'email' => $request->input('email'),
+                            'time_in' => $request->input('tim'), 
+                            'date_in' => $request->input('dat'),             
+                        );
+            
+            $Logs = $this->repository->addTimeIn($timeInLogArray);
+
+        // successfully saved
             if($Logs){
-                //fires link event capturing Time_in
-                event(new TimeIn());
+
+        //fires event capturing Time_in notification
+        ////////////////////////////////////////////////////////
+            $this->repository->sendNotification();
+
         //return log
-                $Logs = Logs::all();
+                $Logs = $this->repository->getAllLogs();
         // iterate through collection       
                 foreach($Logs as $Log){
                     $name = $Log->Role;
@@ -81,7 +99,9 @@ class HomeController extends Controller
                 ->with('success' , 'Time In recorded thanx');
 
                 }
+
             }
+
         } 
    
     }

@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use App\Report;
-use App\User;
-use App\logs;
-use App\pagehit;
-use App\Events\Links;
+
+use App\Repositories\PostRepositoryInterface;
 
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
+
+    private $repository;
+
+    public function __construct(PostRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -21,16 +27,17 @@ class ReportController extends Controller
     public function index()
     {
         //fires link event capturing page url
-        event(new Links());
+        $this->repository->saveLinks();
         //returns all user from User table
-        $user = User::all();
+        $user = $this->repository->getAllUser();
         
         //checks if authenticated user role is a 'admin'
         if(Auth::check() && Auth::user()->role == 'admin'){
+
         //returns all log from Logs table 
-        $log = logs::all();
+        $log = $this->repository->getAllLogs();
         //returns all pagehits from pagehits table
-        $pagehit = pagehit::all();
+        $pagehit = $this->repository->getAllPagehits();
 
         //dump payload on report index view
         return view('report.index',['user' => $user,'log' => $log,'pagehit' => $pagehit]);
@@ -38,23 +45,19 @@ class ReportController extends Controller
 
         //checks if authenticated user role is a 'user'
         if(Auth::check() && Auth::user()->role == 'user'){
+            
+            $User = array(               
+                'email' => Auth::user()->email,
+                "role" => Auth::user()->role        
+            );
             //selects User table with value from view where matching attribute and returns collection
-            $user = User::select("*")
-            ->where([
-                ["role", Auth::user()->role],
-                ["email", Auth::user()->email]
-            ])
-            ->get();
-            //updates Log table with value from view where matching attribute and returns collection
-            $log = logs::select("*")
-            ->where([
-                ["role", Auth::user()->role],
-                ["email", Auth::user()->email]
-            ])
-            ->get();
+            $user = $this->repository->getAuthUserByEmailAndRole($User);
+           
+            //selects Log table with value from view where matching attribute and returns collection
+            $log = $this->repository->getAuthUserLogByEmailAndRole($User);
             //dump payload on report index view
             return view('report.index',['user' => $user,'log' => $log,]);
-            }
+        }
     }
 
     /**
@@ -95,9 +98,21 @@ class ReportController extends Controller
      * @param  \App\Report  $report
      * @return \Illuminate\Http\Response
      */
-    public function edit(Report $report)
+    public function edit($id)
     {
-        //
+        //fires link event capturing page url
+        $this->repository->saveLinks();
+         //checks if authenticated user role is a 'user'
+         if(Auth::check() && Auth::user()->role == 'admin'){
+            //selects User table with value from view where matching attribute and returns collection
+            $user = $this->repository->getUserById($id);
+            //updates Log table with value from view where matching attribute and returns collection
+            $log = $this->repository->getLogsById($id);
+            //dump payload on report index view
+            return view('report.edit',['user' => $user,'log' => $log,]);
+            }
+        
+
     }
 
     /**
