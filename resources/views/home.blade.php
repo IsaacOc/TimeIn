@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container" style="margin-top:5em">
     <div class="row">

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\str;
 use App\User;
 use App\logs;
 use App\pagehit;
@@ -59,7 +60,8 @@ class PostRepository implements PostRepositoryInterface
                     'email' => $User['email'],
                     'password' => bcrypt($User['password']), 
                     'role' => $User['role'],
-                    'admin' => $User['admin']  
+                    'admin' => $User['admin'],
+                    'api_token' => str::random(60)  
                 ]);
     
         return $Users;

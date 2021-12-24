@@ -125,6 +125,9 @@ class ReportController extends Controller
     public function update(Request $request, Report $report)
     {
         //
+        $token = Str::random(60);
+         $request->user()->forceFill([ 'api_token' => hash('sha256', $token), ])->save();
+         return ['token' => $token];
     }
 
     /**
